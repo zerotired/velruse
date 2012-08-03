@@ -78,11 +78,16 @@ class GithubProvider(object):
     def login(self, request):
         """Initiate a github login"""
         scope = request.POST.get('scope', self.scope)
+        redirect_uri = "%s?came_from=%s&csrf_token=%s" % (
+            request.route_url(self.callback_route),
+            request.POST.get('came_from', ''),
+            request.POST.get('csrf_token', ''),
+            )
         gh_url = flat_url(
             'https://github.com/login/oauth/authorize',
             scope=scope,
             client_id=self.consumer_key,
-            redirect_uri=request.route_url(self.callback_route))
+            redirect_uri=redirect_uri)
         return HTTPFound(location=gh_url)
 
     def callback(self, request):

@@ -73,11 +73,16 @@ class RenrenProvider(object):
     def login(self, request):
         """Initiate a renren login"""
         scope = request.POST.get('scope', self.scope)
+        redirect_uri = "%s?came_from=%s&csrf_token=%s" % (
+            request.route_url(self.callback_route),
+            request.POST.get('came_from', ''),
+            request.POST.get('csrf_token', ''),
+            )
         url = flat_url('https://graph.renren.com/oauth/authorize',
                        scope=scope,
                        client_id=self.consumer_key,
                        response_type='code',
-                       redirect_uri=request.route_url(self.callback_route))
+                       redirect_uri=redirect_uri)
         return HTTPFound(url)
 
     def callback(self, request):

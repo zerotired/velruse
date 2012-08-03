@@ -74,11 +74,16 @@ class QQProvider(object):
     def login(self, request):
         """Initiate a qq login"""
         scope = request.POST.get('scope', self.scope)
+        redirect_uri = "%s?came_from=%s&csrf_token=%s" % (
+            request.route_url(self.callback_route),
+            request.POST.get('came_from', ''),
+            request.POST.get('csrf_token', ''),
+            )
         gh_url = flat_url('https://graph.qq.com/oauth2.0/authorize',
                           scope=scope,
                           client_id=self.consumer_key,
                           response_type='code',
-                          redirect_uri=request.route_url(self.callback_route))
+                          redirect_uri=redirect_uri)
         return HTTPFound(location=gh_url)
 
     def callback(self, request):

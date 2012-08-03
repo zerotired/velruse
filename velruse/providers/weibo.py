@@ -72,9 +72,14 @@ class WeiboProvider(object):
     def login(self, request):
         """Initiate a weibo login"""
         request.session['state'] = state = uuid.uuid4().hex
+        redirect_uri = "%s?came_from=%s&csrf_token=%s" % (
+            request.route_url(self.callback_route),
+            request.POST.get('came_from', ''),
+            request.POST.get('csrf_token', ''),
+            )
         fb_url = flat_url('https://api.weibo.com/oauth2/authorize',
                           client_id=self.consumer_key,
-                          redirect_uri=request.route_url(self.callback_route),
+                          redirect_uri=redirect_uri,
                           state=state)
         return HTTPFound(location=fb_url)
 

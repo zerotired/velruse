@@ -211,8 +211,11 @@ class OpenIDConsumer(object):
         self._update_authrequest(request, authrequest)
 
         realm = self._get_realm(request)
-        # TODO: add a csrf check to the return_to URL
-        return_to = request.route_url(self.callback_route)
+        return_to = "%s?came_from=%s&csrf_token=%s" % (
+            request.route_url(self.callback_route),
+            request.POST.get('came_from', ''),
+            request.POST.get('csrf_token', ''),
+            )
         request.session['openid_session'] = openid_session
 
         # OpenID 2.0 lets Providers request POST instead of redirect, this

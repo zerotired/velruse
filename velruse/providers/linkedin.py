@@ -77,7 +77,12 @@ class LinkedInProvider(object):
         # Create the consumer and client, make the request
         consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
         sigmethod = oauth.SignatureMethod_HMAC_SHA1()
-        params = {'oauth_callback': request.route_url(self.callback_route)}
+        redirect_uri = "%s?came_from=%s&csrf_token=%s" % (
+            request.route_url(self.callback_route),
+            request.POST.get('came_from', ''),
+            request.POST.get('csrf_token', ''),
+            )
+        params = {'oauth_callback': redirect_uri}
 
         # We go through some shennanigans here to specify a callback url
         oauth_request = oauth.Request.from_consumer_and_token(consumer,

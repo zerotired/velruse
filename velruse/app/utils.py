@@ -3,7 +3,7 @@ import uuid
 from velruse.app.baseconvert import base_encode
 
 
-def redirect_form(end_point, token):
+def redirect_form(end_point, token, came_from=""):
     """Generate a redirect form for POSTing"""
     return """
 <html>
@@ -14,6 +14,7 @@ def redirect_form(end_point, token):
 <form action="%s" method="post" accept-charset="UTF-8"
  enctype="application/x-www-form-urlencoded">
 <input type="hidden" name="token" value="%s" />
+<input type="hidden" name="came_from" value="%s" />
 <input type="submit" value="Continue"/></form>
 <script>
 var elements = document.forms[0].elements;
@@ -23,7 +24,7 @@ for (var i = 0; i < elements.length; i++) {
 </script>
 </body>
 </html>
-""" % (end_point, token)
+""" % (end_point, token, came_from)
 
 
 def generate_token():

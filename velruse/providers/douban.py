@@ -77,6 +77,11 @@ class DoubanProvider(object):
 
     def login(self, request):
         """Initiate a douban login"""
+        redirect_uri = "%s?came_from=%s&csrf_token=%s" % (
+            request.route_url(self.callback_route),
+            request.POST.get('came_from', ''),
+            request.POST.get('csrf_token', ''),
+            )
         consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
 
         oauth_request = oauth.Request.from_consumer_and_token(consumer,
@@ -95,7 +100,7 @@ class DoubanProvider(object):
         req_url = 'http://www.douban.com/service/auth/authorize'
         oauth_request = oauth.Request.from_token_and_callback(
             token=request_token,
-            callback=request.route_url(self.callback_route),
+            callback=redirect_uri,
             http_url=req_url)
         return HTTPFound(location=oauth_request.to_url())
 

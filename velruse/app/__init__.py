@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 
 def auth_complete_view(context, request):
     endpoint = request.registry.settings.get('endpoint')
+    came_from = request.params.get('came_from', '')
     token = generate_token()
     storage = request.registry.velruse_store
     if 'birthday' in context.profile:
@@ -26,7 +27,7 @@ def auth_complete_view(context, request):
         'credentials': context.credentials,
     }
     storage.store(token, result_data, expires=300)
-    form = redirect_form(endpoint, token)
+    form = redirect_form(endpoint, token, came_from)
     return Response(body=form)
 
 
